@@ -1,0 +1,71 @@
+-- A function that returns a list of all players in the game
+local function getAllPlayers()
+    local players = {} -- An empty list to store the players
+    for _, player in pairs(game.Players:GetPlayers()) do -- Loop through all players in the game
+        table.insert(players, player) -- Add each player to the list
+    end
+    return players -- Return the list of players
+end
+
+-- A function that creates a BillboardGui for a player and attaches it to their character
+local function createBillboardGui(player)
+    local billboardGui = Instance.new("BillboardGui") -- Create a new BillboardGui object
+    billboardGui.Name = "Highlighter" -- Give it a name
+    billboardGui.Adornee = player.Character -- Set the adornee to the player's character
+    billboardGui.Size = UDim2.new(0, 100, 0, 100) -- Set the size of the BillboardGui
+    billboardGui.AlwaysOnTop = true -- Make it always on top of other objects
+
+    local frame = Instance.new("Frame") -- Create a new Frame object
+    frame.Parent = billboardGui -- Set the parent to the BillboardGui
+    frame.Size = UDim2.new(1, 0, 1, 0) -- Set the size of the Frame to fill the BillboardGui
+    frame.BackgroundColor3 = Color3.new(1, 0, 0) -- Set the background color to red
+    frame.BackgroundTransparency = 0.5 -- Set the background transparency to 0.5
+
+    return billboardGui -- Return the BillboardGui object
+end
+
+-- A function that highlights all players in the game by creating and attaching BillboardGuis to them
+local function highlightAllPlayers()
+    local players = getAllPlayers() -- Get all players in the game
+    for _, player in pairs(players) do -- Loop through all players
+        if player ~= game.Players.LocalPlayer then -- If the player is not the local player (the one running the script)
+            local billboardGui = createBillboardGui(player) -- Create a BillboardGui for the player
+            billboardGui.Parent = game.Workspace -- Set the parent to the Workspace
+        end
+    end
+end
+
+-- A function that removes all highlights from all players in the game by destroying their BillboardGuis
+local function removeHighlights()
+    local players = getAllPlayers() -- Get all players in the game
+    for _, player in pairs(players) do -- Loop through all players
+        if player ~= game.Players.LocalPlayer then -- If the player is not the local player (the one running the script)
+            local highlighter = player.Character:FindFirstChild("Highlighter") -- Find the highlighter (the BillboardGui) attached to their character
+            if highlighter then -- If there is a highlighter
+                highlighter:Destroy() -- Destroy it
+            end
+        end
+    end
+end
+
+-- A variable that stores whether highlighting is on or off
+local highlighting = false
+
+-- A function that toggles highlighting on or off by calling highlightAllPlayers or removeHighlights accordingly
+local function toggleHighlighting()
+    highlighting = not highlighting -- Toggle highlighting variable between true and false
+    if highlighting then -- If highlighting is true (on)
+        highlightAllPlayers() -- Call highlightAllPlayers function to highlight all players in the game
+    else -- If highlighting is false (off)
+        removeHighlights() -- Call removeHighlights function to remove all highlights from all players in the game
+    end
+end
+
+-- A variable that stores how often highlighting should refresh (in seconds)
+local refreshRate = 5
+
+-- A loop that runs every refreshRate seconds and calls toggleHighlighting function to refresh highlighting 
+while true do 
+    toggleHighlighting() -- Call toggleHighlighting function to refresh highlighting 
+    wait(refreshRate) -- Wait for refreshRate seconds before repeating the loop 
+end 
